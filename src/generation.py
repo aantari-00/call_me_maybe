@@ -107,6 +107,7 @@ def generate_json_string(
 
     generated_ids: list[int] = []
     generated_text = ""
+    previous_char_is_backslash = False
 
     for _ in range(max_tokens):
         current_ids = input_ids + generated_ids
@@ -126,16 +127,30 @@ def generate_json_string(
         token = vocab.id_to_token[best_id]
         token = token.replace("Ġ", " ")
 
-        if '"' in token:
-            text_before_quote = token.split('"')[0]
-            generated_text += text_before_quote
+        reached_end_of_string = False
+
+        for char in token:
+            if previous_char_is_backslash:
+                generated_text += char
+                previous_char_is_backslash = False
+                continue
+
+            if char == "\\":
+                previous_char_is_backslash = True
+                continue
+
+            if char == '"':
+                reached_end_of_string = True
+                break
+
+            generated_text += char
+
+        if reached_end_of_string:
             break
 
         generated_ids.append(best_id)
-        generated_text += token
 
     generated_text = generated_text.strip()
-    generated_text = generated_text.replace("\\\\", "\\")
 
     return generated_text, generated_ids
 
