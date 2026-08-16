@@ -86,9 +86,9 @@ def generate_json_number(
     for token_id in generated_ids:
         number_text += vocab.id_to_token[token_id]
 
-    if "." in number_text:
-        return float(number_text), generated_ids
-    return int(number_text), generated_ids
+    if param_type == "integer":
+        return int(number_text), generated_ids
+    return float(number_text), generated_ids
 
 
 def generate_json_string(
