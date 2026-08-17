@@ -13,3 +13,9 @@ llm-sdk = { path = "llm_sdk", editable = true }
 
 [tool.uv]
 package = false
+
+[dependency-groups]
+dev = [
+    "flake8",
+    "mypy",
+]

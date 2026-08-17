@@ -294,3 +294,29 @@ def create_function_prompt(
     )
 
     return prompt
+
+
+def create_verification_prompt(
+    user_prompt: str,
+    function_name: str,
+    function_description: str
+) -> str:
+    """Build a yes/no prompt asking whether the chosen function genuinely
+    answers the user's request."""
+
+    return (
+        "<|im_start|>system\n"
+        "You are a strict verifier for a function-calling system. "
+        "You will be given a user request and one proposed function. "
+        "Answer true only if the function genuinely and directly "
+        "answers the request. Answer false if the request is unrelated, "
+        "off-topic, or not something this function does.\n"
+        "<|im_end|>\n"
+        "<|im_start|>user\n"
+        f'Request: "{user_prompt}"\n'
+        f"Proposed function: {function_name} - {function_description}\n"
+        "Does this function correctly answer the request?\n"
+        "<|im_end|>\n"
+        "<|im_start|>assistant\n"
+        "Answer: "
+    )

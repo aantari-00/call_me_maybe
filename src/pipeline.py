@@ -9,6 +9,7 @@ from src.generation import (
     generate_json_number,
     generate_json_string,
     generate_json_boolean,
+    create_verification_prompt,
 )
 
 
@@ -31,6 +32,16 @@ def process_prompt(sdk: Small_LLM_Model, prompt_item: PromptItem,
     if schema is None:
         raise ValueError(
             f"Generated function name '{fn_name}' not found in schema"
+        )
+
+    verify_text = create_verification_prompt(
+        prompt_item.prompt, schema.name, schema.description
+    )
+    verify_ids = sdk.encode(verify_text).flatten().tolist()
+    is_match, _ = generate_json_boolean(sdk, verify_ids, vocab)
+    if not is_match:
+        raise ValueError(
+            f"No matching function for prompt: '{prompt_item.prompt}'"
         )
 
     input_ids = add_literal_tokens(sdk, input_ids, ', "parameters": {')
